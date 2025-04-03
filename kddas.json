@@ -1,0 +1,14 @@
+[
+  {
+    "id": "kdda19",
+    "fecha": "2025-04-12",
+    "lugar": "Parque Lo Torrent",
+    "hora_de_inicio": "15:30",
+    "hora_de_fin": "21:30",
+    "hora_de_comida": "13:50",
+    "descripcion": "Encuentro fotográfico en San Vicente",
+    "coordinador": "ana01",
+    "participantes_ids": ["ana01"],
+    "imagenes": ["fotos/kdda19.jpg"]
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "id": "ana01",
+    "nombre": "Ana Pérez",
+    "rol": "Modelo",
+    "telefono": "123456789",
+    "correo": "ana@mail.com",
+    "instagram": "@ana_model",
+    "facebook": "fb.com/ana",
+    "web": "https://anaweb.com",
+    "foto": "fotos/ana.jpg",
+    "ciudad": "Alicante",
+    "asistencias": ["kdda18", "kdda19"]
+  }
+]

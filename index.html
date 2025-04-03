@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>KDDs Fotográficas - Acceso Privado</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; margin: 0; background: #f4f4f4; padding: 1rem; }
+        .login, .content { max-width: 800px; margin: auto; padding: 2rem; }
+        .login { text-align: center; margin-top: 10vh; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { margin: 0.5rem; padding: 0.5rem; width: 80%; }
+        button { padding: 0.5rem 1rem; margin-top: 1rem; }
+        .hidden { display: none; }
+        h1, h2 { text-align: center; }
+        .kdda, .participante {
+            background: #fff; border-radius: 10px; padding: 1rem;
+            margin: 1rem auto; max-width: 800px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+        }
+        .kdda img, .participante img {
+            width: 100%; max-width: 100%; border-radius: 10px; margin-top: 10px;
+        }
+        .participante { display: flex; flex-wrap: wrap; gap: 1rem; }
+        .participante div { flex: 1 1 220px; }
+        .tag { background: #ddd; border-radius: 5px; padding: 2px 6px; margin: 2px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="login" id="login">
+    <h2>Acceso privado</h2>
+    <input type="text" id="user" placeholder="Usuario"><br>
+    <input type="password" id="pass" placeholder="Contraseña"><br>
+    <button onclick="checkLogin()">Entrar</button>
+</div>
+
+<div class="content hidden" id="content">
+    <h1>📸 KDDs Fotográficas</h1>
+    <div id="kddas-container"></div>
+
+    <h2>👥 Participantes</h2>
+    <div id="participantes-container"></div>
+</div>
+
+<script>
+    let participantesMap = {};
+
+    function checkLogin() {
+        const user = document.getElementById("user").value;
+        const pass = document.getElementById("pass").value;
+        if (user === "admin" && pass === "kdda2025") {
+            document.getElementById("login").classList.add("hidden");
+            document.getElementById("content").classList.remove("hidden");
+            cargarDatos();
+        } else {
+            alert("Usuario o contraseña incorrectos.");
+        }
+    }
+
+    async function cargarDatos() {
+        try {
+            const [kddas, participantes] = await Promise.all([
+                fetch('kddas.json').then(r => r.json()),
+                fetch('participantes.json').then(r => r.json())
+            ]);
+
+            participantes.forEach(p => participantesMap[p.id] = p);
+            mostrarKddas(kddas);
+            mostrarParticipantes(participantes);
+        } catch (error) {
+            alert("Error cargando datos. Asegúrate de tener kddas.json y participantes.json en la misma carpeta.");
+        }
+    }
+
+    function mostrarKddas(kddas) {
+        const container = document.getElementById("kddas-container");
+        container.innerHTML = "";
+        kddas.forEach(k => {
+            const div = document.createElement("div");
+            div.className = "kdda";
+            div.innerHTML = `
+                <h2>${k.fecha} – ${k.lugar}</h2>
+                <p><b>Inicio:</b> ${k.hora_de_inicio || "-"} | <b>Fin:</b> ${k.hora_de_fin || "-"} | <b>Comida:</b> ${k.hora_de_comida || "-"}</p>
+                <p>${k.descripcion}</p>
+                <p><b>Coordinador:</b> ${participantesMap[k.coordinador]?.nombre || k.coordinador || "N/D"}</p>
+                <p><b>Participantes:</b> ${(k.participantes_ids || []).map(id => participantesMap[id]?.nombre || id).join(", ")}</p>
+                ${(k.imagenes || []).map(url => `<img src="${url}" alt="Foto KDD">`).join("")}
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function mostrarParticipantes(lista) {
+        const container = document.getElementById("participantes-container");
+        container.innerHTML = "";
+        lista.forEach(p => {
+            const div = document.createElement("div");
+            div.className = "participante";
+            div.innerHTML = `
+                <div><img src="${p.foto || 'default.jpg'}" alt="${p.nombre}"></div>
+                <div>
+                    <h3>${p.nombre}</h3>
+                    <p><b>Rol:</b> ${p.rol}</p>
+                    <p><b>Ciudad:</b> ${p.ciudad || ''}</p>
+                    <p><b>Instagram:</b> ${p.instagram}</p>
+                    <p><b>Facebook:</b> ${p.facebook}</p>
+                    <p><b>Web:</b> <a href="${p.web}" target="_blank">${p.web}</a></p>
+                    <p><b>Correo:</b> ${p.correo}</p>
+                    <p><b>Teléfono:</b> ${p.telefono}</p>
+                    <p><b>KDDs:</b> ${(p.asistencias || []).map(k => `<span class="tag">${k}</span>`).join(" ")}</p>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+</script>
+
+</body>
+</html>
