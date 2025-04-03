@@ -1,15 +1,18 @@
 [
   {
-    "id": "ana01",
-    "nombre": "Ana Pérez",
-    "rol": "Modelo",
-    "telefono": "123456789",
-    "correo": "ana@mail.com",
-    "instagram": "@ana_model",
-    "facebook": "fb.com/ana",
-    "web": "https://anaweb.com",
-    "foto": "fotos/ana.jpg",
-    "ciudad": "Alicante",
-    "asistencias": ["kdda18", "kdda19"]
+    "marca_temporal": "2025-04-03T15:09:59.814Z",
+    "dirección_de_correo_electrónico": "alicantemociona@gmail.com",
+    "nombre_completo_": "Lucas",
+    "rol_en_el_evento": "Fotógrafo",
+    "teléfono_de_contacto": 645767723,
+    "correo_electrónico": "alicantemociona@gmail.com",
+    "instagram": "https://www.instagram.com/lookuspics/",
+    "__facebook__": "no tengo",
+    "página_web_personal": "",
+    "ciudad_de_residencia": "",
+    "fotografía_de_perfil": "https://drive.google.com/open?id=1Y3fdja7LM3nTre8DmOVwcMKJqwArmHcL",
+    "asistencia_a_kdds_previas": "Kdda15, Kdda17",
+    "id": "p001",
+    "asistencias": []
   }
 ]
