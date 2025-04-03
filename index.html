@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>KDD Fotográfica - Acceso Personalizado</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: sans-serif; margin: 0; background: #f4f4f4; padding: 2rem; }
+    .login, .content { max-width: 800px; margin: auto; }
+    .login { text-align: center; margin-top: 10vh; background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .hidden { display: none; }
+    .kdda, .participante { background: white; margin: 1rem auto; padding: 1rem; border-radius: 10px; box-shadow: 0 0 8px rgba(0,0,0,0.1); }
+    .participante img { width: 100%; max-width: 300px; border-radius: 10px; }
+    .tag { background: #ddd; padding: 4px 8px; margin: 2px; display: inline-block; border-radius: 5px; }
+  </style>
+</head>
+<body>
+
+<div class="login" id="login">
+  <h2>🔐 Acceso a la KDD</h2>
+  <input type="email" id="user" placeholder="Correo electrónico"><br><br>
+  <input type="password" id="pass" placeholder="Teléfono de contacto"><br><br>
+  <button onclick="checkLogin()">Entrar</button>
+  <p id="loginError" style="color: red;"></p>
+</div>
+
+<div class="content hidden" id="content">
+  <h1>📸 KDD Fotográfica</h1>
+  <div id="kddas-container"></div>
+  <h2>👥 Participantes</h2>
+  <div id="participantes-container"></div>
+</div>
+
+<script>
+let participantes = [];
+
+function checkLogin() {
+  const correo = document.getElementById("user").value.trim().toLowerCase();
+  const telefono = document.getElementById("pass").value.trim();
+  const user = participantes.find(p => 
+    (p["correo_electrónico"] || p["dirección_de_correo_electrónico"] || "").toLowerCase() === correo &&
+    String(p["teléfono_de_contacto"]) === telefono
+  );
+
+  if (user) {
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("content").classList.remove("hidden");
+    renderData();
+  } else {
+    document.getElementById("loginError").innerText = "Correo o teléfono incorrectos.";
+  }
+}
+
+function renderData() {
+  fetch("kddas.json?v=2")
+    .then(res => res.json())
+    .then(kddas => {
+      const cont = document.getElementById("kddas-container");
+      cont.innerHTML = "";
+      kddas.forEach(k => {
+        const div = document.createElement("div");
+        div.className = "kdda";
+        div.innerHTML = `
+          <h3>${k.fecha} – ${k.lugar}</h3>
+          <p>Inicio: ${k.hora_de_inicio} | Fin: ${k.hora_de_fin} | Comida: ${k.hora_de_comida}</p>
+          <p>${k.descripcion}</p>
+          <p><strong>Coordinador:</strong> ${k.coordinador}</p>
+          <p><strong>Participantes:</strong> ${k.participantes_ids?.join(", ")}</p>
+          ${k.imagenes?.map(i => `<img src="${i}" style="max-width:100%; border-radius:10px;">`).join("")}
+        `;
+        cont.appendChild(div);
+      });
+    });
+
+  const cont = document.getElementById("participantes-container");
+  cont.innerHTML = "";
+  participantes.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "participante";
+    div.innerHTML = `
+      <h3>${p.nombre_completo_ || p.nombre}</h3>
+      <p><strong>Rol:</strong> ${p.rol_en_el_evento || p.rol}</p>
+      <p><strong>Ciudad:</strong> ${p.ciudad_de_residencia || ""}</p>
+      <p><strong>Instagram:</strong> ${p.instagram || ""}</p>
+      <p><strong>Facebook:</strong> ${p.__facebook__ || ""}</p>
+      <p><strong>Web:</strong> <a href="${p.página_web_personal || "#"}">${p.página_web_personal || ""}</a></p>
+      <p><strong>Correo:</strong> ${p["correo_electrónico"] || p["dirección_de_correo_electrónico"]}</p>
+      <p><strong>Teléfono:</strong> ${p["teléfono_de_contacto"]}</p>
+      <p><strong>KDDs:</strong> ${(p.asistencia_a_kddas_previas || "").split(",").map(k => `<span class="tag">${k.trim()}</span>`).join(" ")}</p>
+      ${p.fotografía_de_perfil ? `<img src="${p.fotografía_de_perfil}" alt="Foto de perfil">` : ""}
+    `;
+    cont.appendChild(div);
+  });
+}
+
+fetch("participantes.json?v=2")
+  .then(res => res.json())
+  .then(data => {
+    participantes = data;
+  });
+</script>
+
+</body>
+</html>
